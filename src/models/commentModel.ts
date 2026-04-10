@@ -1,7 +1,15 @@
 import { db } from "../config/database.js";
 
-export const getAllComments = async () => {
-  const query = db("comments");
+export const getAllComments = async (post: number, commenter: number) => {
+  let query = db("comments");
+  if (post) {
+    query = query.where({ post_id: post });
+  }
+
+  if (commenter) {
+    query = query.where({ commenter_name: commenter });
+  }
+
   return query.select("id", "commenter_name");
 };
 

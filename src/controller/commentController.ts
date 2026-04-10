@@ -9,7 +9,8 @@ import {
 
 export const getAllCommentController = async (req: Request, res: Response) => {
   try {
-    const items = await getAllComments();
+     const { post, commenter } = req.query;
+    const items = await getAllComments(Number(post), Number(commenter));
     res.json(items);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -41,6 +42,7 @@ export const updateCommentController = async (req: Request, res: Response) => {
 };
 export const deleteCommentController = async (req: Request, res: Response) => {
   try {
+   
     const { id } = req.params;
     const deletedItem = await deleteComment(Number(id));
     if (deletedItem.length === 0) {

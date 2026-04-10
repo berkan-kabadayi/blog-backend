@@ -9,7 +9,12 @@ import {
 
 export const getAllPostsController = async (req: Request, res: Response) => {
   try {
-    const items = await getAllPosts();
+    const { showDeleted, category, status } = req.query;
+    const items = await getAllPosts(
+      showDeleted as string,
+      Number(category),
+      status as string
+    );
     res.json(items);
   } catch (error) {
     console.error("Error fetching posts:", error);
@@ -42,7 +47,7 @@ export const updatePostController = async (req: Request, res: Response) => {
 };
 
 export const deletePostController = async (req: Request, res: Response) => {
- try {
+  try {
     const { id } = req.params;
     const deletedItem = await deletePost(Number(id));
     if (deletedItem.length === 0) {

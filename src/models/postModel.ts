@@ -1,7 +1,27 @@
 import { db } from "../config/database.js";
 
-export const getAllPosts = async () => {
-  const query = db("posts").where({ deleted_at: null });
+export const getAllPosts = async (
+  showDeleted: string,
+  category: number,
+  status: string
+) => {
+  let query = db("posts")
+  if (category) {
+    query.where({ category_id: category });
+  }
+  if (showDeleted === "true") {
+  } else if (showDeleted === "onlyDeleted") {
+    query.whereNot({ deleted_at: null });
+  } else {
+    query.where({ deleted_at: null });
+  }
+
+  if (status === "published") {
+    query.whereNot({ published_at: null });
+  } else if (status === "draft") {
+    query.where({ published_at: null });
+  }
+
   return query.select("id", "title");
 };
 

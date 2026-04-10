@@ -12,7 +12,9 @@ export const getAllCategoriesController = async (
   res: Response
 ) => {
   try {
-    const items = await getAllCategories();
+    const { showDeleted } = req.query;
+
+    const items = await getAllCategories(showDeleted as string);
     res.status(200).json(items);
   } catch (error) {
     console.error("Error fetching categories:", error);
