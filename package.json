@@ -28,6 +28,7 @@
     "typescript": "^6.0.2"
   },
   "devDependencies": {
-    "@types/knex": "^0.15.2"
+    "@types/knex": "^0.15.2",
+    "tsx": "^4.21.0"
   }
 }
