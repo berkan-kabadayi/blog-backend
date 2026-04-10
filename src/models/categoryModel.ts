@@ -2,11 +2,11 @@ import { db } from "../config/database.js";
 
 export const getAllCategories = async () => {
   const query = db("categories");
-  return query.select("id, name");
+  return query.select("id", "name");
 };
 
 export const createCategory = async (name: string) => {
-  return db("categories").insert({ name }).returning("id,name");
+  return db("categories").insert({ name }).returning("*");
 };
 
 export const updateCategory = async (id: number, data: object) => {
