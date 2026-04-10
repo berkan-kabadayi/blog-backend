@@ -1,7 +1,7 @@
 import { db } from "../config/database.js";
 
 export const getAllPosts = async () => {
-  const query = db("posts");
+  const query = db("posts").where({ deleted_at: null });
   return query.select("id", "title");
 };
 
