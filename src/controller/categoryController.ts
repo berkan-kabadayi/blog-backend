@@ -48,11 +48,11 @@ export const updateCategoryController = async (req: Request, res: Response) => {
 export const deleteCategoryController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const deletedItem = await deleteCategory(Number(id));
-    res.status(204).json(deletedItem);
+    await deleteCategory(Number(id));
+    res.sendStatus(204);
   } catch (error) {
     console.error("Error deleting category:", error);
-    res.status(500).json({ message: "Internals server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -70,6 +70,6 @@ export const getCategoryByIdController = async (
     res.status(200).json(item);
   } catch (error) {
     console.error("Error fetching category by ID:", error);
-    res.status(500).json({ message: "Internals server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };

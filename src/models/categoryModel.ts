@@ -1,35 +1,58 @@
-import { db } from "../config/database.js";
+import { prisma } from "../config/database.js";
+import { SHOW_DELETED_TRUE } from "../utils/constants.js";
+
+const createWhereClause = (id: number, deleted_at: Date | null) => ({
+  id,
+  deleted_at,
+});
+
+const createUniqueWhereClause = (id: number) => ({
+  id,
+});
 
 export const getAllCategories = async (showDeleted: string) => {
-  const query = db("categories");
-  if (showDeleted === "true") {
-  } else if (showDeleted === "onlyDeleted") {
-    query.whereNot({ deleted_at: null });
+  let whereClause: any = {};
+  if (showDeleted === SHOW_DELETED_TRUE.TRUE) {
+  } else if (showDeleted === SHOW_DELETED_TRUE.ONLY_DELETED) {
+    whereClause.deleted_at = { not: null };
   } else {
-    query.where({ deleted_at: null });
+    whereClause.deleted_at = null;
   }
 
-  return query.select("id", "name");
+  return prisma.category.findMany({
+    where: whereClause,
+    select: {
+      id: true,
+      name: true,
+    },
+  });
 };
 
 export const createCategory = async (name: string) => {
-  return db("categories").insert({ name }).returning("*");
+  return prisma.category.create({
+    data: {
+      name,
+    },
+  });
 };
 
 export const updateCategory = async (id: number, data: object) => {
-  return db("categories")
-    .where({ id, deleted_at: null })
-    .update(data)
-    .returning("*");
+  return prisma.category.update({
+    where: createUniqueWhereClause(id),
+    data,
+  });
 };
 
 export const deleteCategory = async (id: number) => {
-  return db("categories")
-    .where({ id, deleted_at: null })
-    .update({ deleted_at: new Date() })
-    .returning("*");
+  const data = { deleted_at: new Date() };
+  return prisma.category.update({
+    where: createUniqueWhereClause(id),
+    data: data,
+  });
 };
 
 export const getCategoryById = async (id: number) => {
-  return db("categories").where({ id, deleted_at: null }).first();
+  return prisma.category.findFirst({
+    where: createWhereClause(id, null),
+  });
 };

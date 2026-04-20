@@ -1,15 +1,10 @@
-import knex from "knex";
-import dotenv from "dotenv";
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "../../generated/client"; 
 
-dotenv.config();
+const connectionString = `${process.env.DATABASE_URL}`;
 
-export  const db = knex({
-  client: "pg",
-  connection: {
-    host: process.env.DB_HOST || "localhost",
-    port: parseInt(process.env.DB_PORT || "5432"),
-    database: process.env.DB_NAME || "blog",
-    user: process.env.DB_USER || "postgres",
-    password: process.env.DB_PASSWORD || "password",
-  },
-});
+const adapter = new PrismaPg({ connectionString });
+const prisma = new PrismaClient({ adapter });
+
+export { prisma };
