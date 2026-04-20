@@ -1,30 +1,33 @@
-import { db } from "../config/database.js";
+import { prisma } from "../config/database.js";
 
 export const getAllComments = async (post: number, commenter: number) => {
-  let query = db("comments");
+  let whereClause: any = {};
   if (post) {
-    query = query.where({ post_id: post });
+    whereClause.post.id = post;
   }
 
   if (commenter) {
-    query = query.where({ commenter_name: commenter });
+    whereClause.commenter.name = commenter;
   }
 
-  return query.select("id", "commenter_name");
+  return prisma.comment.findMany({
+    where: whereClause,
+    select: { id: true, commenter_name: true },
+  });
 };
 
 export const createComment = async (data: object) => {
-  return db("comments").insert(data).returning("*");
+  return prisma.comment.create({ data: data as any });
 };
 
 export const updateComment = async (id: number, data: object) => {
-  return db("comments").where({ id }).update(data).returning("*");
+  return prisma.comment.update({ where: { id }, data: data as any });
 };
 
 export const deleteComment = async (id: number) => {
-  return db("comments").where({ id }).delete().returning("*");
+  return prisma.comment.delete({ where: { id } });
 };
 
 export const getCommentById = async (id: number) => {
-  return db("comments").where({ id }).first();
+  return prisma.comment.findFirst({ where: { id } });
 };

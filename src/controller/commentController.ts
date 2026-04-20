@@ -9,7 +9,7 @@ import {
 
 export const getAllCommentController = async (req: Request, res: Response) => {
   try {
-     const { post, commenter } = req.query;
+    const { post, commenter } = req.query;
     const items = await getAllComments(Number(post), Number(commenter));
     res.json(items);
   } catch (error) {
@@ -31,7 +31,7 @@ export const updateCommentController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updatedItem = await updateComment(Number(id), req.body);
-    if (updatedItem.length === 0) {
+    if (!updatedItem) {
       res.status(404).json({ message: "Comment not found" });
     }
     res.json(updatedItem);
@@ -42,10 +42,9 @@ export const updateCommentController = async (req: Request, res: Response) => {
 };
 export const deleteCommentController = async (req: Request, res: Response) => {
   try {
-   
     const { id } = req.params;
     const deletedItem = await deleteComment(Number(id));
-    if (deletedItem.length === 0) {
+    if (!deletedItem) {
       res.status(404).json({ message: "Comment not found" });
     }
     res.json(deletedItem);
