@@ -7,11 +7,14 @@
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "es6",
-    "types": [],
+    "module": "esnext",
+    "target": "es2023",
+    "types": ["node"],
+    "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0",
     // For nodejs:
-    // "lib": ["esnext"],
+    "lib": ["esnext"],
+    "esModuleInterop": true,
     // "types": ["node"],
     // and npm install -D @types/node
 
@@ -40,5 +43,8 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "prisma.config.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
