@@ -8,44 +8,66 @@
   <img src="https://img.shields.io/badge/PostgreSQL-Database-blue?style=for-the-badge&logo=postgresql" />
 </p>
 ---
-📌 Overview
-A RESTful Blog API built with TypeScript, Express, and Prisma ORM.
+## 📌 Overview
+
+A RESTful Blog API built with **TypeScript**, **Express**, and **Prisma ORM**.
+
 This project was intentionally built and evolved in two distinct phases to simulate a real-world migration scenario — a common requirement in production environments.
+
 ---
-🔄 Project Evolution: Knex → Prisma
+
+## 🔄 Project Evolution: Knex → Prisma
+
 > **⚠️ Note for visitors coming from GitHub:** The repository's commit history includes an earlier version of this project built with **Knex.js**. This was not a mistake — it was intentional.
-Why the migration?
-This project started with Knex.js as the query builder. After completing a working version, I deliberately migrated it to Prisma ORM to simulate the kind of database layer migration that happens in real production projects.
-The goal was to experience firsthand:
-How to transition an existing codebase from a query builder to a full ORM
-How Prisma's type-safe client differs from raw SQL-style queries in Knex
-What challenges arise during schema and model layer rewrites
-How to manage migration tooling differences (`knex migrate` vs `prisma migrate`)
-What changed?
-Area	Knex.js (v1)	Prisma (v2)
-Query style	Raw SQL builder	Type-safe ORM client
-Schema definition	Migration files	`schema.prisma`
-Migrations	`knex migrate:latest`	`prisma migrate dev`
-Type safety	Manual typing	Auto-generated types
-Client setup	`knex({ client: 'pg', ... })`	`PrismaClient` with adapter
-Soft delete filter	Manual `whereNull`	`whereClause` object pattern
-Commit history
+
+### Why the migration?
+
+This project started with **Knex.js** as the query builder. After completing a working version, I deliberately migrated it to **Prisma ORM** to simulate the kind of database layer migration that happens in real production projects.
+
+**The goal was to experience firsthand:**
+
+- How to transition an existing codebase from a query builder to a full ORM.
+- How Prisma's type-safe client differs from raw SQL-style queries in Knex.
+- What challenges arise during schema and model layer rewrites.
+- How to manage migration tooling differences (`knex migrate` vs `prisma migrate`).
+
+### What changed?
+
+| Area                   | Knex.js (v1)                  | Prisma (v2)                  |
+| :--------------------- | :---------------------------- | :--------------------------- |
+| **Query Style**        | Raw SQL builder               | Type-safe ORM client         |
+| **Schema Definition**  | Migration files               | `schema.prisma`              |
+| **Migrations**         | `knex migrate:latest`         | `prisma migrate dev`         |
+| **Type Safety**        | Manual typing                 | Auto-generated types         |
+| **Client Setup**       | `knex({ client: 'pg', ... })` | `PrismaClient` with adapter  |
+| **Soft Delete Filter** | Manual `whereNull`            | `whereClause` object pattern |
+
+### Commit History
+
 The repository preserves both phases:
-Early commits → Knex.js implementation
-Later commits → Prisma migration, model rewrites, schema changes
-This is intentional. If you're reading the code at different points in the history, the tech stack will look different — that's the point.
+
+- **Early commits** → Knex.js implementation.
+- **Later commits** → Prisma migration, model rewrites, and schema changes.
+
+This is intentional. If you're reading the code at different points in the history, the tech stack will look different — **that's the point.**
+
 ---
-✨ Features
-🧱 Modular architecture (Controller + Model + Routes)
-🗄️ PostgreSQL with Prisma ORM
-🔄 Migration-based database management
-🗑️ Soft delete support (`deleted_at` field)
-🔍 Query filtering (show all / active only / deleted only)
-🔗 Relational structure (Posts, Categories, Comments, Tags)
-⚡ RESTful API design
-🩺 Healthcheck endpoint
+
+## ✨ Features
+
+- 🧱 **Modular Architecture:** Clean separation of concerns (Controller + Model + Routes).
+- 🗄️ **Database:** PostgreSQL powered by Prisma ORM.
+- 🔄 **Migrations:** Robust, migration-based database management.
+- 🗑️ **Soft Delete:** Built-in support using the `deleted_at` field.
+- 🔍 **Smart Filtering:** Query support for showing all, active only, or only deleted records.
+- 🔗 **Relational Data:** Deep relations between Posts, Categories, Comments, and Tags.
+- ⚡ **RESTful Design:** Standardized API endpoints.
+- 🩺 **Healthcheck:** Dedicated endpoint for system monitoring.
+
 ---
-🛠️ Tech Stack
+
+## 🛠️ Tech Stack
+
 ```bash
 Node.js
 TypeScript
@@ -54,8 +76,11 @@ Prisma ORM
 PostgreSQL
 dotenv
 ```
+
 ---
+
 📂 Project Structure
+
 ```bash
 src/
   config/
@@ -80,12 +105,14 @@ src/
   app.ts
 
 prisma/
-schema.prisma # Database schema definition
-migrations/ # Auto-generated migration files
+  schema.prisma          # Database schema definition
+  migrations/            # Auto-generated migration files
+```
 
-````
 ---
+
 🗃️ Database Schema
+
 ```sql
 Categories
   └── id
@@ -109,7 +136,7 @@ Tags
   └── id
   └── name
   └── deleted_at (soft delete)
-````
+```
 
 ✔ Foreign keys  
 ✔ Soft delete support via `deleted_at`  
