@@ -12,6 +12,7 @@ export const getAllPosts = async (
   showDeleted: string,
   category: number,
   status: string,
+  tagIds: number[] | undefined,
 ) => {
   let whereClause: any = {};
   if (showDeleted === SHOW_DELETED_TRUE.TRUE) {

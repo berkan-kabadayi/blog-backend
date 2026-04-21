@@ -6,14 +6,17 @@ import {
   deletePost,
   getPostById,
 } from "../models/postModel.js";
+import { addTagToPost, removeTagFromPost } from "../models/postTagModel.js";
 
 export const getAllPostsController = async (req: Request, res: Response) => {
   try {
-    const { showDeleted, category, status } = req.query;
+    const { showDeleted, category, status, tags } = req.query;
+    const tagIds = tags?.toString().split(" , ").map(Number);
     const items = await getAllPosts(
       showDeleted as string,
       Number(category),
       status as string,
+      tagIds,
     );
     res.json(items);
   } catch (error) {
@@ -68,6 +71,33 @@ export const getPostByIdController = async (req: Request, res: Response) => {
       res.status(404).json({ message: "Post not found" });
     }
     res.json(item);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const addTagToPostController = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { tagId } = req.body;
+    const item = await addTagToPost(Number(id), Number(tagId));
+    res.status(201).json(item);
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const removeTagFromPostController = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { id } = req.params;
+    const { tagId } = req.body;
+    const item = await removeTagFromPost(Number(id), Number(tagId));
+    res.status(200).json(item);
   } catch (error) {
     console.error("Error fetching post:", error);
     res.status(500).json({ message: "Internal server error" });
