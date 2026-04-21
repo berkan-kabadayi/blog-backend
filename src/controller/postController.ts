@@ -13,7 +13,7 @@ export const getAllPostsController = async (req: Request, res: Response) => {
     const items = await getAllPosts(
       showDeleted as string,
       Number(category),
-      status as string
+      status as string,
     );
     res.json(items);
   } catch (error) {
@@ -36,7 +36,7 @@ export const updatePostController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const updatedItem = await updatePost(Number(id), req.body);
-    if (updatedItem.length === 0) {
+    if (!updatedItem) {
       res.status(404).json({ message: "Post not found" });
     }
     res.json(updatedItem);
@@ -50,7 +50,7 @@ export const deletePostController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const deletedItem = await deletePost(Number(id));
-    if (deletedItem.length === 0) {
+    if (!deletedItem) {
       res.status(404).json({ message: "Post not found" });
     }
     res.json(deletedItem);
