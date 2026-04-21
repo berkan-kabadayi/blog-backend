@@ -30,6 +30,15 @@ export const getAllPosts = async (
   } else if (status === POST_STATUS.DRAFT) {
     whereClause.published_at = null;
   }
+
+  if (tagIds && tagIds.length > 0) {
+    whereClause.postTags = {
+      some: {
+        tag_id: { in: tagIds },
+      },
+    };
+  }
+
   return prisma.post.findMany({
     where: whereClause,
     select: {
