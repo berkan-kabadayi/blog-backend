@@ -4,6 +4,7 @@ import categoryRoutes from "./routes/categoryRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import tagRoutes from "./routes/tagRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/posts", postRoutes);
 app.use("/api/v1/comments", commentRoutes);
 app.use("/api/v1/tags", tagRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.get("/healthcheck", (req: Request, res: Response) => {
   return res.status(200).json({ message: "OK" });

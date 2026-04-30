@@ -155,6 +155,16 @@ exports.Prisma.PostTagScalarFieldEnum = {
   tag_id: 'tag_id'
 };
 
+exports.Prisma.UserScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  username: 'username',
+  hashed_password: 'hashed_password',
+  role: 'role',
+  created_at: 'created_at',
+  deleted_at: 'deleted_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -169,14 +179,19 @@ exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
 };
-
+exports.Role = exports.$Enums.Role = {
+  MEMBER: 'MEMBER',
+  MODERATOR: 'MODERATOR',
+  ADMIN: 'ADMIN'
+};
 
 exports.Prisma.ModelName = {
   Category: 'Category',
   Post: 'Post',
   Comment: 'Comment',
   Tag: 'Tag',
-  PostTag: 'PostTag'
+  PostTag: 'PostTag',
+  User: 'User'
 };
 
 /**
