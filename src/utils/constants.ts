@@ -9,3 +9,8 @@ export const POST_STATUS = {
   DRAFT: "draft",
   ALL: "all",
 };
+
+export const JWT_EXPIRATION = {
+  ACCESS: 1000 * 60 * 60,
+  REFRESH: 1000 * 60 * 60 * 24 * 7,
+};

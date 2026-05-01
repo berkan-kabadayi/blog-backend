@@ -7,7 +7,8 @@ import {
   updateUser,
   deleteUser,
 } from "../models/userModel.js";
-import argon2, { argon2id } from "argon2";
+import argon2 from "argon2";
+import { hashPassword } from "../utils/hashPassword.js";
 
 export const getAllUsersController = async (req: Request, res: Response) => {
   try {
@@ -31,12 +32,7 @@ export const createUserController = async (req: Request, res: Response) => {
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
-    const hashedPassword = await argon2.hash(password, {
-      type: argon2.argon2id,
-      memoryCost: 2 ** 16,
-      timeCost: 3,
-      parallelism: 1,
-    });
+    const hashedPassword = await hashPassword(password);
     await createUser(name, username, hashedPassword);
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
@@ -88,12 +84,7 @@ export const updateUserController = async (req: Request, res: Response) => {
       updateData.username = username;
     }
     if (password) {
-      const hashedPassword = await argon2.hash(password, {
-        type: argon2.argon2id,
-        memoryCost: 2 ** 16,
-        timeCost: 3,
-        parallelism: 1,
-      });
+      const hashedPassword = await hashPassword(password);
       updateData.hashed_password = hashedPassword;
     }
     if (name) {

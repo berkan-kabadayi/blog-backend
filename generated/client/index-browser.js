@@ -165,6 +165,15 @@ exports.Prisma.UserScalarFieldEnum = {
   deleted_at: 'deleted_at'
 };
 
+exports.Prisma.RefreshTokenScalarFieldEnum = {
+  id: 'id',
+  created_at: 'created_at',
+  updated_at: 'updated_at',
+  expires_at: 'expires_at',
+  revoked_at: 'revoked_at',
+  user_id: 'user_id'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -191,7 +200,8 @@ exports.Prisma.ModelName = {
   Comment: 'Comment',
   Tag: 'Tag',
   PostTag: 'PostTag',
-  User: 'User'
+  User: 'User',
+  RefreshToken: 'RefreshToken'
 };
 
 /**

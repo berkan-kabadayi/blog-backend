@@ -1,0 +1,66 @@
+import { type Request, type Response } from "express";
+import { createUser, getUserByUsername } from "../models/userModel";
+import { hashPassword, verifyPassword } from "../utils/hashPassword.js";
+
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../services/jwtService";
+import { JWT_EXPIRATION } from "../utils/constants";
+import { createRefreshToken } from "../models/refreshTokenModel";
+
+export const registerController = async (req: Request, res: Response) => {
+  try {
+    const { name, username, password } = req.body;
+    if (!name || !username || !password) {
+      return res
+        .status(400)
+        .json({ message: "Name, username and password are required" });
+    }
+    const existingUser = await getUserByUsername(username);
+    if (existingUser) {
+      return res.status(400).json({ message: "Username already exists" });
+    }
+    const hashedPassword = await hashPassword(password);
+    await createUser(name, username, hashedPassword);
+    res.status(201).json({ message: "User created successfully" });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const loginController = async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) {
+      return res
+        .status(400)
+        .json({ message: "Username and password are requireds" });
+    }
+    const user = await getUserByUsername(username);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid username or password" });
+    }
+    const isPasswordValid = await verifyPassword(
+      password,
+      user.hashed_password,
+    );
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid username or passwordF" });
+    }
+    const accessToken = await generateAccessToken(user.id);
+    const refreshToken = await generateRefreshToken(user.id);
+    const refreshTokenData = {
+      user_id: user.id,
+      token: refreshToken,
+      expires_at: new Date(Date.now() + JWT_EXPIRATION.REFRESH),
+      created_at: new Date(),
+    };
+    await createRefreshToken(refreshTokenData);
+    res.status(200).json({ accessToken, refreshToken });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

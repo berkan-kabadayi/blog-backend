@@ -77,13 +77,27 @@ enum Role {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   name            String
-  username        String    @unique
+  username        String
   hashed_password String
-  role            Role      @default(MEMBER)
-  created_at      DateTime  @default(now())
+  role            Role           @default(MEMBER)
+  created_at      DateTime       @default(now())
   deleted_at      DateTime?
+  refreshTokens   RefreshToken[]
 
+  @@unique([username, deleted_at])
   @@map("users")
+}
+
+model RefreshToken {
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  expires_at DateTime?
+  revoked_at DateTime?
+  user_id    Int
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
 }
