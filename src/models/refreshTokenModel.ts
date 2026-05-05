@@ -1,8 +1,8 @@
 import { prisma } from "../config/database.js";
-import type { RefreshToken } from "../../generated/client/index.js";
+import type { Prisma } from "../../generated/client/index.js";
 
 export const createRefreshToken = async (
-  refreshToken: Partial<RefreshToken>,
+  refreshToken: Prisma.RefreshTokenUncheckedCreateInput,
 ) => {
   return prisma.refreshToken.create({ data: refreshToken });
 };

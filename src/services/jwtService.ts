@@ -21,21 +21,30 @@ export const verifyRefreshToken = async (token: string) => {
   return payload;
 };
 
-export const generateRefreshToken = async (userId: number) => {
-  const secret = generateRefreshSecret();
+export const generateAccessToken = async (userId: number) => {
+  const secret = await generateAccessSecret();
+
+  const expiration = Math.floor(Date.now() / 1000) + JWT_EXPIRATION.ACCESS_S;
+
   const token = await new SignJWT({ userId })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime(JWT_EXPIRATION.REFRESH)
-    .sign(await secret);
+    .setIssuedAt()
+    .setExpirationTime(expiration)
+    .sign(secret);
+
   return token;
 };
 
-export const generateAccessToken = async (userId: number) => {
-  const expires_at = new Date(Date.now() + JWT_EXPIRATION.ACCESS);
-  const secret = generateAccessSecret();
+export const generateRefreshToken = async (userId: number) => {
+  const secret = await generateRefreshSecret();
+
+  const expiration = Math.floor(Date.now() / 1000) + JWT_EXPIRATION.REFRESH_S;
+
   const token = await new SignJWT({ userId })
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime(expires_at)
-    .sign(await secret);
+    .setIssuedAt()
+    .setExpirationTime(expiration)
+    .sign(secret);
+
   return token;
 };

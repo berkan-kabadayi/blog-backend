@@ -7,4 +7,4 @@ const connectionString = `${process.env.DATABASE_URL}`;
 
 const pool = new pg.Pool({ connectionString });
 const adapter = new PrismaPg(pool);
-export const prisma = new PrismaClient({ adapter }); // Direkt export const kullan
+export const prisma = new PrismaClient({ adapter });

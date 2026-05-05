@@ -1,5 +1,9 @@
 import { type Request, type Response } from "express";
-import { createUser, getUserByUsername } from "../models/userModel";
+import {
+  createUser,
+  getUserById,
+  getUserByUsername,
+} from "../models/userModel";
 import { hashPassword, verifyPassword } from "../utils/hashPassword.js";
 
 import {
@@ -54,11 +58,22 @@ export const loginController = async (req: Request, res: Response) => {
     const refreshTokenData = {
       user_id: user.id,
       token: refreshToken,
-      expires_at: new Date(Date.now() + JWT_EXPIRATION.REFRESH),
+      expires_at: new Date(Date.now() + JWT_EXPIRATION.REFRESH_S),
       created_at: new Date(),
     };
     await createRefreshToken(refreshTokenData);
     res.status(200).json({ accessToken, refreshToken });
+  } catch (error) {
+    console.error("Error deleting users:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const meController = async (req: Request, res: Response) => {
+  try {
+    const user = await getUserById(req.user as number);
+
+    return res.status(200).json(user);
   } catch (error) {
     console.error("Error deleting users:", error);
     res.status(500).json({ message: "Internal server error" });
