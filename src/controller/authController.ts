@@ -122,3 +122,30 @@ export const refreshTokenController = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const logoutController = async (req: Request, res: Response) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      return res.status(400).json({ message: "Refresh token is required" });
+    }
+    let payload: { userId: number };
+    try {
+      payload = (await verifyRefreshToken(refreshToken)) as { userId: number };
+    } catch (error) {
+      return res.status(400).json({ message: "Invalid refresh token" });
+    }
+    const refreshTokenData = await getRefreshTokenByTokenAndUserId(
+      hashToken(refreshToken),
+      payload.userId,
+    );
+    if (!refreshTokenData) {
+      return res.status(400).json({ message: "Invalid refresh token" });
+    }
+    await revokeRefreshToken(refreshTokenData.id);
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
