@@ -31,6 +31,8 @@ model Post {
   created_at   DateTime  @default(now())
   deleted_at   DateTime?
   published_at DateTime?
+  user_id      Int
+  user         User      @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   category Category  @relation(fields: [category_id], references: [id], onDelete: Cascade)
   comments Comment[]
@@ -40,12 +42,13 @@ model Post {
 }
 
 model Comment {
-  id             Int      @id @default(autoincrement())
-  content        String
-  commenter_name String
-  created_at     DateTime @default(now())
-  post_id        Int
-  post           Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  id         Int      @id @default(autoincrement())
+  content    String
+  created_at DateTime @default(now())
+  post_id    Int
+  post       Post     @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@map("comments")
 }
@@ -85,6 +88,8 @@ model User {
   created_at      DateTime       @default(now())
   deleted_at      DateTime?
   refreshTokens   RefreshToken[]
+  posts           Post[]
+  comments        Comment[]
 
   @@unique([username, deleted_at])
   @@map("users")

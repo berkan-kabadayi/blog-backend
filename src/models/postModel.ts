@@ -48,8 +48,8 @@ export const getAllPosts = async (
   });
 };
 
-export const createPost = async (data: object) => {
-  return prisma.post.create({ data: data as any });
+export const createPost = async (data: object, userId: number) => {
+  return prisma.post.create({ data: { ...data, user_id: userId } as any });
 };
 
 export const updatePost = async (id: number, data: object) => {
@@ -66,7 +66,7 @@ export const deletePost = async (id: number) => {
   });
 };
 
-export const getPostById = async (id: number) => {
+export const getPostById = async (id: number, ) => {
   return prisma.post.findFirst({
     where: createWhereClause(id, null),
   });

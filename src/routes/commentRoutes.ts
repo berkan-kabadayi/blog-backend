@@ -6,13 +6,14 @@ import {
   getCommentByIdController,
   updateCommentController,
 } from "../controller/commentController.js";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.get("/", getAllCommentController);
-router.post("/", createCommentController);
-router.put("/:id", updateCommentController);
-router.delete("/:id", deleteCommentController);
+router.post("/", authMiddleware, createCommentController);
+router.put("/:id", authMiddleware, updateCommentController);
+router.delete("/:id", authMiddleware, deleteCommentController);
 router.get("/:id", getCommentByIdController);
 
 export default router;

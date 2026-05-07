@@ -6,10 +6,11 @@ import {
   deleteCategory,
   getCategoryById,
 } from "../models/categoryModel.js";
+import { getUserById } from "../models/userModel.js";
 
 export const getAllCategoriesController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { showDeleted } = req.query;
@@ -24,6 +25,12 @@ export const getAllCategoriesController = async (
 
 export const createCategoryController = async (req: Request, res: Response) => {
   try {
+    const user = await getUserById(req.user as number);
+    if (user?.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to create a user" });
+    }
     const { name } = req.body;
     const item = await createCategory(name);
     res.status(201).json(item);
@@ -35,6 +42,12 @@ export const createCategoryController = async (req: Request, res: Response) => {
 
 export const updateCategoryController = async (req: Request, res: Response) => {
   try {
+    const user = await getUserById(req.user as number);
+    if (user?.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to create a user" });
+    }
     const { id } = req.params;
     const data = req.body;
     const item = await updateCategory(Number(id), data);
@@ -58,7 +71,7 @@ export const deleteCategoryController = async (req: Request, res: Response) => {
 
 export const getCategoryByIdController = async (
   req: Request,
-  res: Response
+  res: Response,
 ) => {
   try {
     const { id } = req.params;

@@ -1,12 +1,13 @@
-import type { User } from "../../generated/client/index.js";
+import type { Role, User } from "../../generated/client/index.js";
 import { prisma } from "../config/database.js";
 
 export const createUser = async (
   name: string,
   username: string,
   hashed_password: string,
+  role: Role = "MEMBER",
 ) => {
-  const user = { name, username, hashed_password };
+  const user = { name, username, hashed_password, role };
   return prisma.user.create({ data: user });
 };
 

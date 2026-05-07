@@ -7,17 +7,17 @@ export const getAllComments = async (post: number, commenter: number) => {
   }
 
   if (commenter) {
-    whereClause.commenter.name = commenter;
+    whereClause.user = { name: commenter };
   }
 
   return prisma.comment.findMany({
     where: whereClause,
-    select: { id: true, commenter_name: true },
+    select: { id: true, user: { select: { name: true } } },
   });
 };
 
-export const createComment = async (data: object) => {
-  return prisma.comment.create({ data: data as any });
+export const createComment = async (data: object, userId: number) => {
+  return prisma.comment.create({ data: { ...data, user_id: userId } as any });
 };
 
 export const updateComment = async (id: number, data: object) => {

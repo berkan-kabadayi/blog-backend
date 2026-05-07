@@ -134,15 +134,16 @@ exports.Prisma.PostScalarFieldEnum = {
   category_id: 'category_id',
   created_at: 'created_at',
   deleted_at: 'deleted_at',
-  published_at: 'published_at'
+  published_at: 'published_at',
+  user_id: 'user_id'
 };
 
 exports.Prisma.CommentScalarFieldEnum = {
   id: 'id',
   content: 'content',
-  commenter_name: 'commenter_name',
   created_at: 'created_at',
-  post_id: 'post_id'
+  post_id: 'post_id',
+  user_id: 'user_id'
 };
 
 exports.Prisma.TagScalarFieldEnum = {

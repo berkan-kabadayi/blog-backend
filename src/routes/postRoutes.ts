@@ -8,13 +8,14 @@ import {
   addTagToPostController,
   removeTagFromPostController,
 } from "../controller/postController.js";
+import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
 router.get("/", getAllPostsController);
-router.post("/", createPostController);
-router.put("/:id", updatePostController);
-router.delete("/:id", deletePostController);
+router.post("/", authMiddleware, createPostController);
+router.put("/:id", authMiddleware, updatePostController);
+router.delete("/:id", authMiddleware, deletePostController);
 router.get("/:id", getPostByIdController);
 
 router.post("/:id/tags", addTagToPostController);

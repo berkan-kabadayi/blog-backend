@@ -7,7 +7,7 @@ import {
   updateUser,
   deleteUser,
 } from "../models/userModel.js";
-import argon2 from "argon2";
+
 import { hashPassword } from "../utils/hashPassword.js";
 
 export const getAllUsersController = async (req: Request, res: Response) => {
@@ -22,18 +22,27 @@ export const getAllUsersController = async (req: Request, res: Response) => {
 
 export const createUserController = async (req: Request, res: Response) => {
   try {
-    const { name, username, password } = req.body;
-    if (!name || !username || !password) {
+    const user = await getUserById(req.user as number);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    if (user.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to create a user" });
+    }
+    const { name, username, password, role } = req.body;
+    if (!name || !username || !password || !role) {
       return res
         .status(400)
-        .json({ message: "Name, username and password are required" });
+        .json({ message: "Name, username, password and role are required" });
     }
     const existingUser = await getUserByUsername(username);
     if (existingUser) {
       return res.status(400).json({ message: "Username already exists" });
     }
     const hashedPassword = await hashPassword(password);
-    await createUser(name, username, hashedPassword);
+    await createUser(name, username, hashedPassword, role);
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
     console.error("Error deleting users:", error);
@@ -58,6 +67,13 @@ export const getUserByIdController = async (req: Request, res: Response) => {
 export const updateUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const requestUser = await getUserById(req.user as number);
+    if (requestUser?.role !== "ADMIN" && requestUser?.id !== Number(id)) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this user" });
+    }
+
     const { name, username, password } = req.body;
     if (!name && !username && !password) {
       return res
@@ -103,6 +119,12 @@ export const updateUserController = async (req: Request, res: Response) => {
 export const deleteUserController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const requestUser = await getUserById(req.user as number);
+    if (requestUser?.role !== "ADMIN" && requestUser?.id !== Number(id)) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to delete this user" });
+    }
     const user = await getUserById(Number(id));
     if (!user) {
       return res.status(404).json({ message: "User not found" });

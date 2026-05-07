@@ -7,6 +7,7 @@ import {
   getPostById,
 } from "../models/postModel.js";
 import { addTagToPost, removeTagFromPost } from "../models/postTagModel.js";
+import { getUserById } from "../models/userModel.js";
 
 export const getAllPostsController = async (req: Request, res: Response) => {
   try {
@@ -27,7 +28,7 @@ export const getAllPostsController = async (req: Request, res: Response) => {
 
 export const createPostController = async (req: Request, res: Response) => {
   try {
-    const newItem = await createPost(req.body);
+    const newItem = await createPost(req.body, req.user as number);
     res.status(201).json(newItem);
   } catch (error) {
     console.error("Error creating post:", error);
@@ -38,6 +39,20 @@ export const createPostController = async (req: Request, res: Response) => {
 export const updatePostController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const item = await getPostById(Number(id));
+    if (!item) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const requestUser = await getUserById(req.user as number);
+    const isElevatedRole =
+      requestUser?.role === "ADMIN" || requestUser?.role === "MODERATOR";
+    const postOwnerId = (item as { user_id?: number }).user_id;
+    if (!isElevatedRole && requestUser?.id !== postOwnerId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this user" });
+    }
+
     const updatedItem = await updatePost(Number(id), req.body);
     if (!updatedItem) {
       res.status(404).json({ message: "Post not found" });
@@ -52,6 +67,19 @@ export const updatePostController = async (req: Request, res: Response) => {
 export const deletePostController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const item = await getPostById(Number(id));
+    if (!item) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+    const requestUser = await getUserById(req.user as number);
+    const isElevatedRole = requestUser?.role === "ADMIN";
+    const postOwnerId = (item as { user_id?: number }).user_id;
+    if (!isElevatedRole && requestUser?.id !== postOwnerId) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to update this user" });
+    }
+
     const deletedItem = await deletePost(Number(id));
     if (!deletedItem) {
       res.status(404).json({ message: "Post not found" });
