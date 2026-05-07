@@ -6,6 +6,7 @@ import {
   updateTag,
   deleteTag,
 } from "../models/tagModel.js";
+import { getUserById } from "../models/userModel.js";
 
 export const getAllTagsController = async (req: Request, res: Response) => {
   try {
@@ -19,6 +20,12 @@ export const getAllTagsController = async (req: Request, res: Response) => {
 
 export const createTagController = async (req: Request, res: Response) => {
   try {
+    const requestUser = await getUserById(req.user as number);
+    if (requestUser?.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: " You are not authorized to update this comment" });
+    }
     const { name } = req.body;
     const createdItem = await createTag(name);
     res.status(201).json(createdItem);
@@ -45,6 +52,12 @@ export const getTagByIdController = async (req: Request, res: Response) => {
 
 export const updateTagController = async (req: Request, res: Response) => {
   try {
+    const requestUser = await getUserById(req.user as number);
+    if (requestUser?.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: " You are not authorized to update this comment" });
+    }
     const { id } = req.params;
     const { name } = req.body;
     const updatedItem = await updateTag(Number(id), name);
@@ -61,6 +74,12 @@ export const updateTagController = async (req: Request, res: Response) => {
 
 export const deleteTagController = async (req: Request, res: Response) => {
   try {
+    const requestUser = await getUserById(req.user as number);
+    if (requestUser?.role !== "ADMIN") {
+      return res
+        .status(403)
+        .json({ message: " You are not authorized to update this comment" });
+    }
     const { id } = req.params;
     const deletedItem = await deleteTag(Number(id));
     if (!deletedItem) {
