@@ -109,13 +109,32 @@ export const addTagToPostController = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { tagId } = req.body;
+    const post = await getPostById(Number(id));
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const requestUser = await getUserById(req.user as number);
+    const postOwnerId = (post as { user_id?: number }).user_id;
+    const isAuthorized =
+      requestUser?.role === "ADMIN" ||
+      requestUser?.role === "MODERATOR" ||
+      requestUser?.id === postOwnerId;
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to add tag to this post" });
+    }
+
     const item = await addTagToPost(Number(id), Number(tagId));
-    res.status(201).json(item);
+    return res.status(201).json(item);
   } catch (error) {
     console.error("Error fetching post:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 export const removeTagFromPostController = async (
   req: Request,
@@ -124,8 +143,25 @@ export const removeTagFromPostController = async (
   try {
     const { id } = req.params;
     const { tagId } = req.body;
+    const post = await getPostById(Number(id));
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const requestUser = await getUserById(req.user as number);
+    const postOwnerId = (post as { user_id?: number }).user_id;
+    const isAuthorized =
+      requestUser?.role === "ADMIN" ||
+      requestUser?.role === "MODERATOR" ||
+      requestUser?.id === postOwnerId;
+    if (!isAuthorized) {
+      return res
+        .status(403)
+        .json({ message: "You are not authorized to remove tag from this post" });
+    }
+
     const item = await removeTagFromPost(Number(id), Number(tagId));
-    res.status(200).json(item);
+    return res.status(200).json(item);
   } catch (error) {
     console.error("Error fetching post:", error);
     res.status(500).json({ message: "Internal server error" });

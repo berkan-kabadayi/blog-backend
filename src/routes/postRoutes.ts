@@ -18,7 +18,7 @@ router.put("/:id", authMiddleware, updatePostController);
 router.delete("/:id", authMiddleware, deletePostController);
 router.get("/:id", getPostByIdController);
 
-router.post("/:id/tags", addTagToPostController);
-router.delete("/:id/tags", removeTagFromPostController);
+router.post("/:id/tags", authMiddleware, addTagToPostController);
+router.delete("/:id/tags", authMiddleware, removeTagFromPostController);
 
 export default router;
