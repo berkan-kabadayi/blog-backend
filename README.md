@@ -57,6 +57,8 @@ This is intentional. If you're reading the code at different points in the histo
 
 - 🧱 **Modular Architecture:** Clean separation of concerns (Controller + Model + Routes).
 - 🗄️ **Database:** PostgreSQL powered by Prisma ORM.
+- 🔐 **Authentication:** JWT-based access/refresh token flow with login, register, refresh, and logout endpoints.
+- 🛡️ **Authorization:** Role and ownership-based access control for protected write operations.
 - 🔄 **Migrations:** Robust, migration-based database management.
 - 🗑️ **Soft Delete:** Built-in support using the `deleted_at` field.
 - 🔍 **Smart Filtering:** Query support for showing all, active only, or only deleted records.
@@ -75,6 +77,8 @@ Express.js
 Prisma ORM
 PostgreSQL
 dotenv
+jose
+argon2
 ```
 
 ---
@@ -86,20 +90,29 @@ src/
   config/
     database.ts          # Prisma client setup
   controller/
+    authController.ts
     categoryController.ts
     postController.ts
     commentController.ts
     tagController.ts
+    userController.ts
   models/
     categoryModel.ts
     postModel.ts
     commentModel.ts
     tagModel.ts
+    userModel.ts
   routes/
+    authRoutes.ts
+    userRoutes.ts
     categoryRoutes.ts
     postRoutes.ts
     commentRoutes.ts
     tagRoutes.ts
+  middleware/
+    auth.middleware.ts
+  services/
+    jwtService.ts
   utils/
     constants.ts
   app.ts
@@ -124,13 +137,29 @@ Posts
   └── title
   └── content
   └── category_id → Categories.id
+  └── user_id → Users.id
   └── deleted_at (soft delete)
 
 Comments
   └── id
   └── content
   └── post_id → Posts.id
+  └── user_id → Users.id
+
+Users
+  └── id
+  └── name
+  └── username
+  └── hashed_password
+  └── role (MEMBER | MODERATOR | ADMIN)
   └── deleted_at (soft delete)
+
+RefreshTokens
+  └── id
+  └── token
+  └── user_id → Users.id
+  └── expires_at
+  └── revoked_at
 
 Tags
   └── id
@@ -159,6 +188,8 @@ npm install
 ```env
 PORT=3000
 DATABASE_URL=postgresql://your_username:your_password@localhost:5432/blog
+JWT_ACCESS_SECRET_KEY=your_access_secret
+JWT_REFRESH_SECRET_KEY=your_refresh_secret
 ```
 
 ---
@@ -180,6 +211,26 @@ npm run dev
 ---
 
 📡 API Endpoints
+🔐 Auth
+
+```http
+POST   /api/v1/auth/register
+POST   /api/v1/auth/login
+GET    /api/v1/auth/me
+POST   /api/v1/auth/refresh-token
+POST   /api/v1/auth/logout
+```
+
+👤 Users
+
+```http
+GET    /api/v1/users
+GET    /api/v1/users/:id
+POST   /api/v1/users   # admin-only user creation (different from public self-register at /api/v1/auth/register)
+PATCH  /api/v1/users/:id
+DELETE /api/v1/users/:id
+```
+
 📁 Categories
 
 ```http
@@ -191,7 +242,8 @@ DELETE /api/v1/categories/:id
 ```
 
 > Supports `?showDeleted=true` or `?showDeleted=only` query param for soft delete filtering.
-> 📝 Posts
+
+### 📝 Posts
 
 ```http
 GET    /api/v1/posts
@@ -200,6 +252,8 @@ POST   /api/v1/posts
 PUT    /api/v1/posts/:id
 DELETE /api/v1/posts/:id
 ```
+
+> Supports `?showDeleted=true` or `?showDeleted=only` query param for soft delete filtering.
 
 💬 Comments
 
@@ -221,12 +275,17 @@ PUT    /api/v1/tags/:id
 DELETE /api/v1/tags/:id
 ```
 
+> Supports `?showDeleted=true` or `?showDeleted=only` query param for soft delete filtering.
+
 ---
 
 🧠 Design Decisions
 Prisma ORM provides full type safety and auto-completion for all database queries
 Soft deletes implemented via `deleted_at` timestamp — data is never hard-deleted by default
 `showDeleted` query param gives API consumers control over which records they see
+Access and refresh token lifecycle is handled with JWT and database-backed refresh token records
+Protected routes use middleware-based identity extraction and controller-level authorization checks
+Role-based (ADMIN/MODERATOR/MEMBER) and ownership-based checks are used together for safer write operations
 Modular layer structure (Controller → Model → Prisma Client) keeps concerns separated
 `PrismaPg` adapter used for a clean PostgreSQL connection setup via connection string
 
@@ -238,7 +297,6 @@ Modular layer structure (Controller → Model → Prisma Client) keeps concerns 
 + Add validation (Zod / Joi)
 + Implement global error handling middleware
 + Add service layer for business logic
-+ JWT authentication & authorization
 + Pagination, sorting, search
 + Swagger / OpenAPI documentation
 ```
